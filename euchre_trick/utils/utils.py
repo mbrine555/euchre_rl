@@ -10,3 +10,6 @@ def init_euchre_deck():
     rank_list = ['A', '9', 'T', 'J', 'Q', 'K']
     res = [Card(suit, rank) for suit in suit_list for rank in rank_list]
     return res
+
+def cards2list(cards):
+    return [card.get_index() for card in cards]

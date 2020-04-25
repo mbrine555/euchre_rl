@@ -14,6 +14,11 @@ class EuchreDealer(object):
     def shuffle(self):
         random.shuffle(self.deck)
 
-    def deal_card(self, player):
-        card = self.deck.pop()
-        player.hand.append(card)
+    def deal_cards(self, player, num):
+        for _ in range(num):
+            card = self.deck.pop()
+            player.hand.append(card)
+
+    def flip_top_card(self):
+        top_card = self.deck.pop()
+        return top_card
