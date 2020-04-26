@@ -54,6 +54,17 @@ class EuchreGame(object):
             state = self.get_state(self.current_player)
             return state, self.current_player
     
+        if action == 'pass':
+            self._perform_pass()
+            state = self.get_state(self.current_player)
+            return state, self.current_player
+
+        if action.startswith('call'):
+            suit = action.split('-')[1]
+            self._perform_call(suit)
+            state = self.get_state(self.current_player)
+            return state, self.current_player
+
         if action.startswith('discard'):
             card = action.split('-')[1]
             self._perform_discard(card)
@@ -101,3 +112,12 @@ class EuchreGame(object):
         self.score[winner] += 1
         self.current_player = winner
         self.center = {}
+
+    def _perform_call(self, suit):
+        self.trump = suit
+        self.current_player = self._increment_player(self.dealer_player_id)
+
+    def _perform_pass(self):
+        if self.current_player == self.dealer_player_id:
+            self.flipped_card = None
+        self.current_player = self._increment_player(self.current_player)
