@@ -4,7 +4,7 @@ from copy import deepcopy
 from euchre_trick.dealer import EuchreDealer as Dealer
 from euchre_trick.player import EuchrePlayer as Player
 from euchre_trick.judger import EuchreJudger as Judge
-from euchre_trick.utils.utils import cards2list
+from euchre_trick.utils.utils import cards2list, is_left, is_right
 
 class EuchreGame(object):
 
@@ -29,7 +29,10 @@ class EuchreGame(object):
         self.history = []
         self.center = {}
         self.score = {i:0 for i in range(self.num_players)}
+        
         self.trump = None
+        self.lead_suit = None
+        self.turned_down = None
 
         self.current_player = self._increment_player(self.dealer_player_id)
         state = self.get_state(self.current_player)
@@ -41,6 +44,8 @@ class EuchreGame(object):
         state['hand'] = cards2list(player.hand)
         state['trump_called'] = self.trump is not None
         state['trump'] = self.trump
+        state['turned_down'] = self.turned_down
+        state['lead_suit'] = self.lead_suit
         if self.flipped_card is not None:
             state['flipped'] = self.flipped_card.get_index()
         else:
@@ -104,6 +109,11 @@ class EuchreGame(object):
                 remove_index = index
                 break
         card = player.hand.pop(remove_index)
+        if len(self.center) == 0:
+            if card.suit == self.trump or is_left(card, self.trump):
+                self.lead_suit = self.trump
+            else:
+                self.lead_suit = card.suit
         self.center[self.current_player] = card
         self.current_player = self._increment_player(self.current_player)
 
@@ -112,6 +122,7 @@ class EuchreGame(object):
         self.score[winner] += 1
         self.current_player = winner
         self.center = {}
+        self.lead_suit = None
 
     def _perform_call(self, suit):
         self.trump = suit
@@ -119,5 +130,31 @@ class EuchreGame(object):
 
     def _perform_pass(self):
         if self.current_player == self.dealer_player_id:
+            self.turned_down = self.flipped_card.suit
             self.flipped_card = None
         self.current_player = self._increment_player(self.current_player)
+
+    def get_legal_actions(self):
+        hand = self.players[self.current_player].hand
+        if len(hand) == 6:
+            return [f"discard-{card.get_index()}" for card in hand]
+
+        if self.trump is None:
+            if self.turned_down is None:
+                return ['pick', 'pass']
+            else:
+                actions = [f"call-{suit}" for suit in ['S', 'C', 'D', 'H'] if suit != self.turned_down]
+                if self.current_player != self.dealer_player_id:
+                    actions += ['pass']
+                return actions
+
+        if self.lead_suit is None:
+            return [card.get_index() for card in hand]
+        
+        follow = [card.get_index() for card in hand if 
+                    (card.suit == self.lead_suit and not is_left(card, self.trump)) or 
+                    (is_left(card, self.lead_suit) and self.lead_suit == self.trump)]
+
+        if len(follow) > 0:
+            return follow
+        return [card.get_index() for card in hand]

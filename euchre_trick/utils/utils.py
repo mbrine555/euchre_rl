@@ -1,5 +1,6 @@
 from rlcard.core import Card, Player
 
+LEFT = {'D': 'HJ', 'H': 'DJ', 'C':'SJ', 'S':'CJ'}
 
 def init_euchre_deck():
     ''' Initialize a standard deck of 52 cards
@@ -13,3 +14,9 @@ def init_euchre_deck():
 
 def cards2list(cards):
     return [card.get_index() for card in cards]
+
+def is_left(card, trump):
+    return card.get_index() == LEFT[trump]
+
+def is_right(card, trump):
+    return card.get_index() == trump + 'J'

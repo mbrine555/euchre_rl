@@ -1,8 +1,9 @@
+from euchre_trick.utils.utils import is_left, is_right
+
 non_trump = ['9', 'T', 'J', 'Q', 'K', 'A']
-left = {'D': 'HJ', 'H': 'DJ', 'C':'SJ', 'S':'CJ'}
 
 class EuchreJudger(object):
-    
+
     def __init__(self):
         pass
 
@@ -15,20 +16,20 @@ class EuchreJudger(object):
         lead_suit = center_cards[leader].suit
         winning_card = center_cards[leader]
         
-        if self._is_right(winning_card, trump):
+        if is_right(winning_card, trump):
             return [k for k, v in center_cards.items() if winning_card == v][0]
 
         for player in player_order[1:]:
             candidate_card = center_cards[player]
             
-            if self._is_right(candidate_card, trump):
+            if is_right(candidate_card, trump):
                 winning_card = candidate_card
                 break
 
-            if self._is_left(winning_card, trump):
+            if is_left(winning_card, trump):
                 continue
 
-            if self._is_left(candidate_card, trump):
+            if is_left(candidate_card, trump):
                 winning_card = candidate_card
                 continue
 
@@ -50,9 +51,3 @@ class EuchreJudger(object):
 
     def _get_player_order(self, leader):
         return [(i+leader)%4 for i in range(4)]
-
-    def _is_left(self, card, trump):
-        return card.get_index() == left[trump]
-
-    def _is_right(self, card, trump):
-        return card.get_index() == trump + 'J'
