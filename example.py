@@ -15,4 +15,4 @@ env.set_agents([RandomAgent(action_num=env.action_num),
                 RandomAgent(action_num=env.action_num), 
                 RandomAgent(action_num=env.action_num)])
 
-trajectories, _ = env.run(is_training=False)
+trajectories, payoffs = env.run(is_training=False)
