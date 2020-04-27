@@ -1,5 +1,6 @@
 from euchre_trick.env import EuchreEnv
 from rlcard.agents.random_agent import RandomAgent
+from rlcard.utils.utils import tournament
 
 DEFAULT_CONFIG = {
     'allow_step_back': False,
@@ -15,4 +16,4 @@ env.set_agents([RandomAgent(action_num=env.action_num),
                 RandomAgent(action_num=env.action_num), 
                 RandomAgent(action_num=env.action_num)])
 
-trajectories, payoffs = env.run(is_training=False)
+tournament(env, 10000)

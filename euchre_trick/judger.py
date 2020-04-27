@@ -50,7 +50,15 @@ class EuchreJudger(object):
         return [k for k, v in center_cards.items() if winning_card == v][0]
 
     def judge_hand(self, game):
-        return max(game.score, key=game.score.get)
+        team_1_score = game.score[0] + game.score[2]
+        if team_1_score == 5:
+            return [0,2], 2
+        elif team_1_score >= 3:
+            return [0,2], 1
+        elif team_1_score == 0:
+            return [1,3], 2
+        else:
+            return [1,3], 1
 
     def _get_player_order(self, leader):
         return [(i+leader)%4 for i in range(4)]

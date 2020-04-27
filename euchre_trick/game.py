@@ -82,7 +82,7 @@ class EuchreGame(object):
         if len(self.center) == 4:
             self._end_trick()
             if len(self.players[self.current_player].hand) == 0:
-                self.winner = self.judge.judge_hand(self)
+                self.winner, self.points = self.judge.judge_hand(self)
                 self.game_over = True
 
         state = self.get_state(self.current_player)
@@ -172,10 +172,10 @@ class EuchreGame(object):
         payoffs = {}
         
         for i in range(self.num_players):
-            if i == self.winner:
-                payoffs[i] = 1
+            if i in self.winner:
+                payoffs[i] = self.points
             else:
-                payoffs[i] = -1
+                payoffs[i] = -self.points
 
         return payoffs
 
