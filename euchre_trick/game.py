@@ -29,6 +29,7 @@ class EuchreGame(object):
         self.history = []
         self.center = {}
         self.score = {i:0 for i in range(self.num_players)}
+        self.game_over = False
         
         self.trump = None
         self.lead_suit = None
@@ -77,8 +78,13 @@ class EuchreGame(object):
             return state, self.current_player
     
         self._play_card(action)
+
         if len(self.center) == 4:
             self._end_trick()
+            if len(self.players[self.current_player].hand) == 0:
+                self.winner = self.judge.judge_hand(self)
+                self.game_over = True
+
         state = self.get_state(self.current_player)
         return state, self.current_player
 
@@ -158,3 +164,24 @@ class EuchreGame(object):
         if len(follow) > 0:
             return follow
         return [card.get_index() for card in hand]
+
+    def get_player_num(self):
+        return self.num_players
+
+    def get_payoffs(self):
+        payoffs = {}
+        
+        for i in range(self.num_players):
+            if i == self.winner:
+                payoffs[i] = 1
+            else:
+                payoffs[i] = -1
+
+        return payoffs
+
+    def is_over(self):
+        return self.game_over
+
+    @staticmethod
+    def get_action_num():
+        return 54

@@ -49,5 +49,8 @@ class EuchreJudger(object):
         
         return [k for k, v in center_cards.items() if winning_card == v][0]
 
+    def judge_hand(self, game):
+        return max(game.score, key=game.score.get)
+
     def _get_player_order(self, leader):
         return [(i+leader)%4 for i in range(4)]
