@@ -61,6 +61,8 @@ ACTION_SPACE = {
 
 ACTION_LIST = list(ACTION_SPACE.keys())
 
+NON_TRUMP = ['9', 'T', 'J', 'Q', 'K', 'A']
+
 def init_euchre_deck():
     ''' Initialize a standard deck of 52 cards
     Returns:

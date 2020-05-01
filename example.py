@@ -1,6 +1,8 @@
-from euchre_trick.env import EuchreEnv
 from rlcard.agents.random_agent import RandomAgent
 from rlcard.utils.utils import tournament
+
+from euchre_trick.env import EuchreEnv
+from euchre_trick.agents.rule_agent import EuchreRuleAgent
 
 DEFAULT_CONFIG = {
     'allow_step_back': False,
@@ -11,9 +13,14 @@ DEFAULT_CONFIG = {
 }
 
 env = EuchreEnv(DEFAULT_CONFIG)
+# All random = 0.00411
+# Calling rules = 0.07179
+# Discard rules = 0.09611
+# Always lead right = 0.10881
+# Play worst trump = 0.16114
 env.set_agents([RandomAgent(action_num=env.action_num), 
+                EuchreRuleAgent(), 
                 RandomAgent(action_num=env.action_num), 
-                RandomAgent(action_num=env.action_num), 
-                RandomAgent(action_num=env.action_num)])
+                EuchreRuleAgent()])
 
-tournament(env, 10000)
+tournament(env, 100000)

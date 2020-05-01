@@ -1,6 +1,4 @@
-from euchre_trick.utils.utils import is_left, is_right
-
-non_trump = ['9', 'T', 'J', 'Q', 'K', 'A']
+from euchre_trick.utils.utils import is_left, is_right, NON_TRUMP
 
 class EuchreJudger(object):
 
@@ -35,7 +33,7 @@ class EuchreJudger(object):
 
             if (candidate_card.suit != trump):
                 if candidate_card.suit == lead_suit:
-                    if non_trump.index(candidate_card.rank) > non_trump.index(winning_card.rank):
+                    if NON_TRUMP.index(candidate_card.rank) > NON_TRUMP.index(winning_card.rank):
                         winning_card = candidate_card
                         continue
             
@@ -43,7 +41,7 @@ class EuchreJudger(object):
                 if candidate_card.suit != winning_card.suit:
                     winning_card = candidate_card
                     continue
-                if non_trump.index(candidate_card.rank) > non_trump.index(winning_card.rank):
+                if NON_TRUMP.index(candidate_card.rank) > NON_TRUMP.index(winning_card.rank):
                     winning_card = candidate_card
                     continue
         
