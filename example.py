@@ -18,6 +18,8 @@ env = EuchreEnv(DEFAULT_CONFIG)
 # Discard rules = 0.09611
 # Always lead right = 0.10881
 # Play worst trump = 0.16114
+# Play off Ace = 0.18589
+# Play worst card = 0.19251
 env.set_agents([RandomAgent(action_num=env.action_num), 
                 EuchreRuleAgent(), 
                 RandomAgent(action_num=env.action_num), 

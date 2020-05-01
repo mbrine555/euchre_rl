@@ -47,6 +47,14 @@ class EuchreRuleAgent(object):
             worst_card = [NON_TRUMP.index(card[1]) for card in playable_trump]
             return playable_trump[np.argmin(worst_card)]
 
+        aces = [card for card in legal_actions if card[0] != state['trump'] and card[1] == 'A']
+        if len(aces) > 0:
+            return aces[0]
+        
+        worst_card = [NON_TRUMP.index(card[1]) for card in legal_actions]
+        if len(worst_card) > 0:
+            return legal_actions[np.argmin(worst_card)]
+            
         return np.random.choice(legal_actions)        
 
 
