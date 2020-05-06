@@ -13,8 +13,8 @@ class EuchreRuleAgent(object):
         legal_actions = state['raw_legal_actions']
         hand = state['hand']
 
-        if len(legal_actions) == 1:
-            return legal_actions[0]
+        #if len(legal_actions) == 1:
+        #    return legal_actions[0]
 
         if len(hand) == 6:
             suit_counts = self.count_suits(hand, include_left=False)

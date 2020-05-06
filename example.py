@@ -1,8 +1,10 @@
 from rlcard.agents.random_agent import RandomAgent
+from rlcard.agents.nfsp_agent_pytorch import NFSPAgent
+from rlcard.utils.logger import Logger
 from rlcard.utils.utils import tournament
 
-from euchre_trick.env import EuchreEnv
 from euchre_trick.agents.rule_agent import EuchreRuleAgent
+from euchre_trick.env import EuchreEnv
 
 DEFAULT_CONFIG = {
     'allow_step_back': False,
@@ -13,16 +15,40 @@ DEFAULT_CONFIG = {
 }
 
 env = EuchreEnv(DEFAULT_CONFIG)
-# All random = 0.00411
-# Calling rules = 0.07179
-# Discard rules = 0.09611
-# Always lead right = 0.10881
-# Play worst trump = 0.16114
-# Play off Ace = 0.18589
-# Play worst card = 0.19251
-env.set_agents([RandomAgent(action_num=env.action_num), 
-                EuchreRuleAgent(), 
-                RandomAgent(action_num=env.action_num), 
-                EuchreRuleAgent()])
+eval_env = EuchreEnv(DEFAULT_CONFIG)
 
-tournament(env, 100000)
+# All random = 0.00411
+# Rule Agent Alone = 0.09185
+# Rule Agent Team = 0.19251
+# Bid Rule = 0.0438
+
+agent = NFSPAgent(scope='nfsp', 
+                 action_num=env.action_num,
+                 rl_learning_rate=1e-3,
+                 state_shape=env.state_shape,
+                 hidden_layers_sizes=[128, 64],
+                 q_mlp_layers=[128, 64])
+
+env.set_agents([agent, 
+                RandomAgent(action_num=env.action_num), 
+                RandomAgent(action_num=env.action_num), 
+                RandomAgent(action_num=env.action_num)])
+
+eval_env.set_agents([agent, 
+                     RandomAgent(action_num=env.action_num), 
+                     RandomAgent(action_num=env.action_num), 
+                     RandomAgent(action_num=env.action_num)])
+
+logger = Logger('.')
+for episode in range(100000):
+    # Generate data from the environment
+    trajectories, _ = env.run(is_training=True)
+    # Feed transitions into agent memory, and train the agent
+    for ts in trajectories[0]:
+        agent.feed(ts)
+    # Evaluate the performance. Play with random agents.
+    if episode % 5000 == 0:
+        logger.log_performance(env.timestep, tournament(eval_env, 10000)[0])
+
+logger.close_files()
+logger.plot('DQN')

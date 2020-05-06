@@ -2,6 +2,40 @@ from rlcard.core import Card, Player
 
 LEFT = {'D': 'HJ', 'H': 'DJ', 'C':'SJ', 'S':'CJ'}
 
+CARD_IDX = {
+    'HA': 0,
+    'HK': 1,
+    'HQ': 2,
+    'HJ': 3,
+    'HT': 4,
+    'H9': 5,
+    'DA': 6,
+    'DK': 7,
+    'DQ': 8,
+    'DJ': 9,
+    'DT': 10,
+    'D9': 11,
+    'SA': 12,
+    'SK': 13,
+    'SQ': 14,
+    'SJ': 15,
+    'ST': 16,
+    'S9': 17,
+    'CA': 18,
+    'CK': 19,
+    'CQ': 20,
+    'CJ': 21,
+    'CT': 22,
+    'C9': 23
+}
+
+TRUMP_IDX = {
+    'H': 0,
+    'D': 1,
+    'C': 2,
+    'S': 3
+}
+
 ACTION_SPACE = {
     'pass': 0,
     'pick': 1,
