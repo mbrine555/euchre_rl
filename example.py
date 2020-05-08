@@ -1,5 +1,5 @@
 from rlcard.agents.random_agent import RandomAgent
-from rlcard.agents.nfsp_agent_pytorch import NFSPAgent
+from rlcard.agents.dqn_agent_pytorch import DQNAgent
 from rlcard.utils.logger import Logger
 from rlcard.utils.utils import tournament
 
@@ -22,12 +22,11 @@ eval_env = EuchreEnv(DEFAULT_CONFIG)
 # Rule Agent Team = 0.19251
 # Bid Rule = 0.0438
 
-agent = NFSPAgent(scope='nfsp', 
+agent = DQNAgent(scope='dqn', 
                  action_num=env.action_num,
-                 rl_learning_rate=1e-3,
                  state_shape=env.state_shape,
-                 hidden_layers_sizes=[128, 64],
-                 q_mlp_layers=[128, 64])
+                 batch_size=64,
+                 mlp_layers=[64])
 
 env.set_agents([agent, 
                 RandomAgent(action_num=env.action_num), 

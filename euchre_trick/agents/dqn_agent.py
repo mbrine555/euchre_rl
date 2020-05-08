@@ -1,3 +1,25 @@
+''' DQN agent
+The code is derived from https://github.com/dennybritz/reinforcement-learning/blob/master/DQN/dqn.py
+Copyright (c) 2019 Matthew Judell
+Copyright (c) 2019 DATA Lab at Texas A&M University
+Copyright (c) 2016 Denny Britz
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+'''
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -288,9 +310,6 @@ class Estimator(object):
         # update model
         batch_loss = self.mse_loss(Q, y)
         batch_loss.backward()
-        # Gradient clipping
-        for param in self.qnet.parameters():
-            param.grad.data.clamp_(-1,1)
         self.optimizer.step()
         batch_loss = batch_loss.item()
 
@@ -318,14 +337,14 @@ class EstimatorNetwork(nn.Module):
         self.mlp_layers = mlp_layers
 
         # build the Q network
-        conv = [nn.Conv2d(1, 6, 2)]
-        conv.append(nn.ReLU())
-        #conv.append(nn.MaxPool2d((2,2)))
-        conv.append(nn.Flatten())
-        conv.append(nn.Linear(138, 64, bias=True))
-        conv.append(nn.ReLU())
-        conv.append(nn.Linear(64, self.action_num, bias=True))
-        self.fc_layers = nn.Sequential(*conv)
+        layer_dims = [np.prod(self.state_shape)] + self.mlp_layers
+        fc = [nn.Flatten()]
+        fc.append(nn.BatchNorm1d(layer_dims[0]))
+        for i in range(len(layer_dims)-1):
+            fc.append(nn.Linear(layer_dims[i], layer_dims[i+1], bias=True))
+            fc.append(nn.LeakyReLU())
+        fc.append(nn.Linear(layer_dims[-1], self.action_num, bias=True))
+        self.fc_layers = nn.Sequential(*fc)
 
     def forward(self, s):
         ''' Predict action values

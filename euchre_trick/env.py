@@ -11,7 +11,7 @@ class EuchreEnv(Env):
     def __init__(self, config):
         self.game = Game()
         super().__init__(config)
-        self.state_shape = [len(CARD_IDX)*2+4]
+        self.state_shape = [len(CARD_IDX)*3+4]
 
     def _extract_state(self, state):
         state['legal_actions'] = self._get_legal_actions()
@@ -25,6 +25,8 @@ class EuchreEnv(Env):
             state_rep[center] = 1
         if state['trump'] is not None:
             state_rep[len(CARD_IDX)*2+TRUMP_IDX[state['trump']]] = 1
+        history = [CARD_IDX[card]+len(CARD_IDX)*2 for card in state['history']]
+        state_rep[history] = 1
         state['obs'] = state_rep
         return state
 

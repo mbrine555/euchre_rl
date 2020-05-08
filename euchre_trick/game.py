@@ -47,6 +47,7 @@ class EuchreGame(object):
         state['trump'] = self.trump
         state['turned_down'] = self.turned_down
         state['lead_suit'] = self.lead_suit
+        state['history'] = self.history
         if self.flipped_card is not None:
             state['flipped'] = self.flipped_card.get_index()
         else:
@@ -91,6 +92,7 @@ class EuchreGame(object):
     def _perform_pick_action(self):
         dealer_player = self.players[self.dealer_player_id]
         dealer_player.hand.append(self.flipped_card)
+        self.history.append(self.flipped_card.get_index())
         self.trump = self.flipped_card.suit
         self.flipped_card = None
         self.calling_player = self.current_player
@@ -126,6 +128,8 @@ class EuchreGame(object):
     def _end_trick(self):
         winner = self.judge.judge_trick(self)
         self.score[winner] += 1
+        for card in self.center.values():
+            self.history.append(card.get_index())
         self.current_player = winner
         self.center = {}
         self.lead_suit = None
